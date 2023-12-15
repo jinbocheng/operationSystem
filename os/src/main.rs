@@ -6,9 +6,11 @@
 mod console;
 mod lang_items;
 mod sbi;
+mod mm;
 
 use core::arch::global_asm;
-
+mm::init();
+extern crate alloc;
 global_asm!(include_str!("entry.asm"));
 fn clear_bss() {
     extern "C" {
@@ -45,3 +47,8 @@ pub fn rust_main() -> ! {
     println!("Hello, world!");
     panic!("Shutdown machine!");
 }
+#[alloc_error_handler]
+pub fn handle_alloc_error(layout: core::alloc::Layout) -> ! {
+    panic!("Heap allocation error, layout = {:?}", layout);
+}
+
