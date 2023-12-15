@@ -51,4 +51,6 @@ pub fn rust_main() -> ! {
 pub fn handle_alloc_error(layout: core::alloc::Layout) -> ! {
     panic!("Heap allocation error, layout = {:?}", layout);
 }
+#[macro_use]
+extern crate bitflags;
 
