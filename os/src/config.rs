@@ -8,4 +8,4 @@ pub fn init() {
     heap_allocator::init_heap();
     heap_allocator::heap_test();
 }
-
+pub const MEMORY_END: usize = 0x80800000;
