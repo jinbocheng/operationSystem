@@ -7,7 +7,7 @@ mod console;
 mod lang_items;
 mod sbi;
 mod mm;
-
+mod sync;
 use core::arch::global_asm;
 mm::init();
 extern crate alloc;
