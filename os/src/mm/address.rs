@@ -1,3 +1,9 @@
+use crate::config::{PAGE_SIZE, PAGE_SIZE_BITS};
+use super::PageTableEntry;
+use core::fmt::{self, Debug, Formatter};
+
+
+
 #[repr(C)]
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub struct PhysAddr(pub usize);
@@ -13,10 +19,6 @@ pub struct PhysPageNum(pub usize);
 #[repr(C)]
 #[derive(Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub struct VirtPageNum(pub usize);
-
-/// T: {PhysAddr, VirtAddr, PhysPageNum, VirtPageNum}
-/// T -> usize: T.0
-/// usize -> T: usize.into()
 
 impl From<usize> for PhysAddr {
     fn from(v: usize) -> Self { Self(v) }
@@ -73,10 +75,6 @@ impl From<PhysAddr> for PhysPageNum {
 impl From<PhysPageNum> for PhysAddr {
     fn from(v: PhysPageNum) -> Self { Self(v.0 << PAGE_SIZE_BITS) }
 }
-
-use crate::config::{PAGE_SIZE, PAGE_SIZE_BITS};
-use super::PageTableEntry;
-use core::fmt::{self, Debug, Formatter};
 
 
 /// Debugging
@@ -192,5 +190,5 @@ impl<T> Iterator for SimpleRangeIterator<T> where
         }
     }
 }
-pub type VPNRange = SimpleRange<VirtPageNum>;
 
+pub type VPNRange = SimpleRange<VirtPageNum>;

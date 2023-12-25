@@ -1,56 +1,53 @@
 #![no_std]
 #![no_main]
 #![feature(panic_info_message)]
-#[macro_use]
+#![feature(alloc_error_handler)]
 
+use core::arch::global_asm;
+
+extern crate alloc;
+
+#[macro_use]
+extern crate bitflags;
+
+#[macro_use]
 mod console;
 mod lang_items;
 mod sbi;
-mod mm;
+mod syscall;
+mod trap;
+mod loader;
+mod config;
+mod task;
+mod timer;
 mod sync;
-use core::arch::global_asm;
-mm::init();
-extern crate alloc;
+mod mm;
+
 global_asm!(include_str!("entry.asm"));
+global_asm!(include_str!("link_app.S"));
+
 fn clear_bss() {
     extern "C" {
         fn sbss();
         fn ebss();
     }
-    (sbss as usize..ebss as usize).for_each(|a| unsafe { (a as *mut u8).write_volatile(0) });
+    unsafe {
+        core::slice::from_raw_parts_mut(
+            sbss as usize as *mut u8,
+            ebss as usize - sbss as usize,
+        ).fill(0);
+    }
 }
 
 #[no_mangle]
 pub fn rust_main() -> ! {
-    extern "C" {
-        fn stext();
-        fn etext();
-        fn srodata();
-        fn erodata();
-        fn sdata();
-        fn edata();
-        fn sbss();
-        fn ebss();
-        fn boot_stack();
-        fn boot_stack_top();
-    }
     clear_bss();
-    println!("Hello, world!");
-    println!(".text [{:#x}, {:#x})", stext as usize, etext as usize);
-    println!(".rodata [{:#x}, {:#x})", srodata as usize, erodata as usize);
-    println!(".data [{:#x}, {:#x})", sdata as usize, edata as usize);
-    println!(
-        "boot_stack [{:#x}, {:#x})",
-        boot_stack as usize, boot_stack_top as usize
-    );
-    println!(".bss [{:#x}, {:#x})", sbss as usize, ebss as usize);
-    println!("Hello, world!");
-    panic!("Shutdown machine!");
+    println!("[kernel] Hello, world!");
+    mm::init();
+    println!("[kernel] back to world!");
+    trap::init();
+    trap::enable_timer_interrupt();
+    timer::set_next_trigger();
+    task::run_first_task();
+    panic!("Unreachable in rust_main!");
 }
-#[alloc_error_handler]
-pub fn handle_alloc_error(layout: core::alloc::Layout) -> ! {
-    panic!("Heap allocation error, layout = {:?}", layout);
-}
-#[macro_use]
-extern crate bitflags;
-

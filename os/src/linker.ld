@@ -46,4 +46,3 @@ SECTIONS
         *(.eh_frame)
     }
 }
-
