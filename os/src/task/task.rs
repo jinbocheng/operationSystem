@@ -11,20 +11,6 @@ pub struct TaskControlBlock {
     pub base_size: usize,
 }
 
-#[derive(Copy, Clone, PartialEq)]
-pub enum TaskStatus {
-    UnInit,
-    Ready,
-    Running,
-    Exited,
-}
-
-#[derive(Copy, Clone)]
-pub struct TaskControlBlock {
-    pub task_cx_ptr: usize,
-    pub task_status: TaskStatus,
-}
-
 impl TaskControlBlock {
     pub fn get_trap_cx(&self) -> &'static mut TrapContext {
         self.trap_cx_ppn.get_mut()
@@ -69,3 +55,9 @@ impl TaskControlBlock {
     }
 }
 
+#[derive(Copy, Clone, PartialEq)]
+pub enum TaskStatus {
+    Ready,
+    Running,
+    Exited,
+}

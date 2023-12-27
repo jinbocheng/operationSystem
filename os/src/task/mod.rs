@@ -2,8 +2,6 @@ mod context;
 mod switch;
 mod task;
 
-use crate::config::MAX_APP_NUM;
-use core::cell::RefCell;
 use crate::loader::{get_num_app, get_app_data};
 use crate::trap::TrapContext;
 use crate::sync::UPSafeCell;
@@ -16,15 +14,13 @@ pub use context::TaskContext;
 
 pub struct TaskManager {
     num_app: usize,
-    inner: RefCell<TaskManagerInner>,
+    inner: UPSafeCell<TaskManagerInner>,
 }
 
 struct TaskManagerInner {
     tasks: Vec<TaskControlBlock>,
     current_task: usize,
 }
-
-unsafe impl Sync for TaskManager {}
 
 lazy_static! {
     pub static ref TASK_MANAGER: TaskManager = {
@@ -121,7 +117,6 @@ impl TaskManager {
     }
 }
 
-
 pub fn run_first_task() {
     TASK_MANAGER.run_first_task();
 }
@@ -155,4 +150,3 @@ pub fn current_user_token() -> usize {
 pub fn current_trap_cx() -> &'static mut TrapContext {
     TASK_MANAGER.get_current_trap_cx()
 }
-
