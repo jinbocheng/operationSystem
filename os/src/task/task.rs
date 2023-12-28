@@ -1,6 +1,6 @@
-use crate::mm::{MemorySet, MapPermission, PhysPageNum, KERNEL_SPACE, VirtAddr};
+use crate::mm::{MemorySet, PhysPageNum, KERNEL_SPACE, VirtAddr};
 use crate::trap::{TrapContext, trap_handler};
-use crate::config::{TRAP_CONTEXT, kernel_stack_position};
+use crate::config::TRAP_CONTEXT;
 use super::TaskContext;
 use crate::sync::UPSafeCell;
 use core::cell::RefMut;
@@ -113,7 +113,6 @@ impl TaskControlBlock {
         );
         // **** release inner automatically
     }
-
     pub fn fork(self: &Arc<TaskControlBlock>) -> Arc<TaskControlBlock> {
         // ---- access parent PCB exclusively
         let mut parent_inner = self.inner_exclusive_access();
@@ -154,7 +153,6 @@ impl TaskControlBlock {
         // ---- release parent PCB automatically
         // **** release children PCB automatically
     }
-
     pub fn getpid(&self) -> usize {
         self.pid.0
     }
