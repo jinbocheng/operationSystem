@@ -113,6 +113,7 @@ impl TaskControlBlock {
         );
         // **** release inner automatically
     }
+
     pub fn fork(self: &Arc<TaskControlBlock>) -> Arc<TaskControlBlock> {
         // ---- access parent PCB exclusively
         let mut parent_inner = self.inner_exclusive_access();
@@ -153,6 +154,7 @@ impl TaskControlBlock {
         // ---- release parent PCB automatically
         // **** release children PCB automatically
     }
+
     pub fn getpid(&self) -> usize {
         self.pid.0
     }
